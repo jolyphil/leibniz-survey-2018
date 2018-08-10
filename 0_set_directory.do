@@ -11,14 +11,14 @@
 * ______________________________________________________________________________
 * Main path
 
-global path "N:/Analyses/leibniz-survey-2018/" // **Put your own path here**
+global path "M:/user/joly/Analyses/leibniz-survey-2018/" // **Put your own path here**
 
 * ______________________________________________________________________________
 * Folders
 
 global data "${path}data/"
 global figures "${path}figures/"
-	global figures_png "${figures}png/"
+	global figures_pdf "${figures}pdf/"
 global scheme "${path}scheme/"
 
 * ______________________________________________________________________________
