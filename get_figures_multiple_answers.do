@@ -93,7 +93,7 @@ Preferred area: Don't know
 * _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 * Generate and export the graph
 
-graph hbar (mean) `ordered_var', ///
+graph hbar (mean) `ordered_var', over(a_5) ///
 	showyvars  /// 
 	yvaroptions(relabel( ///
 		1 "Academia, scientific" ///
@@ -177,6 +177,68 @@ graph hbar (mean) `ordered_var', ///
 graph export "${figures_pdf}fig_c4_1.pdf", replace
 graph export "${figures_png}fig_c4_1.png", replace ///
 	width(2750) height(2000)
+
+* ______________________________________________________________________________
+* Question C5 ("What sorts of professional trainings are offered to doctoral
+* researchers at your institute or research museum?")
+
+* Recode as binary variables
+local i = 1
+foreach var of varlist c_5a_n-c_5i_n {
+	recode `var' (99 = 0), gen(offered_`i')
+	_crcslbl offered_`i' `var'
+	local i = `i' + 1
+}
+
+local ordered_var "offered_1 offered_6 offered_7 offered_9 offered_3 offered_2 offered_5 offered_8 offered_4"
+summ `ordered_var' 
+
+foreach var of varlist `ordered_var' {
+	local label : variable label `var'
+	disp "`label'"
+}
+
+* Output:
+/*
+Professional trainings: Scientific writing
+Professional trainings: scientific methods
+Professional trainings: graduate school
+Professional trainings: other soft skills
+Professional trainings: German
+Professional trainings:  English
+Professional trainings: career development
+Professional trainings: grant application
+Professional trainings: Other language
+*/
+graph hbar (mean) `ordered_var', ///
+	showyvars  /// 
+	yvaroptions(relabel( ///
+		1 "Scientific writing" ///
+		2 "Scientific methods" ///
+		3 "Graduate school" ///
+		4 "Other soft skills" ///
+		5 "German" ///
+		6 "English" /// 
+		7 "Career development" ///
+		8 "Grant application" ///
+		9 "Other language" /// 
+		)) ///
+	bargap(10) ///
+	yscale(noline) ///
+	bar(1, color(ebblue)) ///
+	bar(2, color(ebblue)) ///
+	bar(3, color(ebblue)) ///
+	bar(4, color(ebblue)) ///
+	bar(5, color(ebblue)) ///
+	bar(6, color(ebblue)) ///
+	bar(7, color(ebblue)) ///
+	bar(8, color(ebblue)) ///
+	bar(9, color(ebblue)) ///
+	legend(off)
+graph export "${figures_pdf}fig_c5.pdf", replace
+graph export "${figures_png}fig_c5.png", replace ///
+	width(2750) height(2000)
+
 * ______________________________________________________________________________
 * Question C5.2 ("In which of the following areas of professional training do 
 * you see need for more support with regard to career development?")
