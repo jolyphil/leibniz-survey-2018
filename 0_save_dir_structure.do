@@ -1,7 +1,7 @@
 ********************************************************************************
 * Project:	Leibniz PhD Network Survey 2018
 * Task:		Save structure of working directory
-* Author:	Philippe Joly, Humboldt-Universität zu Berlin & WZB
+* Authors:	Survey working group
 ********************************************************************************
 
 * ______________________________________________________________________________

@@ -1,7 +1,7 @@
 ********************************************************************************
 * Project:	Leibniz PhD Network Survey 2018
 * Task:		Generate bar graphs for questions with multiple answers
-* Author:	Philippe Joly, Humboldt-Universität zu Berlin & WZB
+* Authors:	Survey Working Group
 ********************************************************************************
 
 * ______________________________________________________________________________
