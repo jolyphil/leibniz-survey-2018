@@ -10,7 +10,9 @@
 set scheme minimal // I use my own scheme, but you can use any you like.
 
 // Define your own data folder in a global macro if needed.
-use "${data}final_data_weights.dta", clear
+use "${data}final_data.dta", clear
+
+ssc install tabout
 
 * ______________________________________________________________________________
 * Recode explanatory variables
@@ -90,6 +92,7 @@ label values parent parentlb
 * _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 * Conctractual situation
 
+capture drop contract
 recode b_2 (2/4=0) (5=1) (97=0) (else=.), gen(contract)
 label variable contract "Working contract / Stipend"
 
@@ -118,6 +121,12 @@ foreach indvar of varlist `iv' {
 	tab `indvar' `depvar' [aw=weight], nofreq co
 	}
 }
+
+* _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+* Graph: C.1.A. Support for conf. with participation
+
+
+
 * ______________________________________________________________________________
 * C2: Personal mentor
 
