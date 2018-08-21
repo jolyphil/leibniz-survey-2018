@@ -12,7 +12,7 @@ set scheme minimal // I use my own scheme, but you can use any you like.
 // Define your own data folder in a global macro if needed.
 use "${data}final_data.dta", clear
 
-ssc install tabout
+ssc install estout
 
 * ______________________________________________________________________________
 * Recode explanatory variables
@@ -30,7 +30,8 @@ List of explanatory variables, in order:
 * _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 * Section
 
-recode a_3 (98=.), gen(section)
+*recode a_3 (98=.), gen(section)
+recode a_3 (98=.) (99=1) (100=2) (101=3) (102=4) (103=5), gen(section)
 _crcslbl section a_3
 
 label define sectionlb			///
@@ -125,7 +126,12 @@ foreach indvar of varlist `iv' {
 * _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 * Graph: C.1.A. Support for conf. with participation
 
+estpost tabulate c_1a_n section [aw=weight], nototal
 
+esttab using "${data}c_1a_n_BY_a_3.csv", ///
+	cell(colpct(fmt(2))) unstack noobs  varlabels(`e(labels)') ///
+	nomtitles collabels(none) scsv plain ///
+	replace
 
 * ______________________________________________________________________________
 * C2: Personal mentor
