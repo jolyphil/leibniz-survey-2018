@@ -9,6 +9,7 @@
 
 global data "${path}data/"
 global figures "${path}figures/"
+	global figures_data "${figures}data/"
 	global figures_pdf "${figures}pdf/"
 	global figures_png "${figures}png/"
 global scheme "${path}scheme/"

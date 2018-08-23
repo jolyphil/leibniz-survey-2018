@@ -23,12 +23,12 @@ color dot_area       "218 231 253"
 color legend_line        none
 
 color p      black
-color p1     gs10
-color p2     ebblue
-color p3     green
-color p4     orange
-color p5     cranberry
-color p6     dkorange
+color p1     "204 235 197"
+color p2     "168 221 181"
+color p3     "123 204 196"
+color p4     "78 179 211"
+color p5     "43 140 190"
+color p6     "8 88 158"
 color p7     navy8
 color p8     yellow
 
