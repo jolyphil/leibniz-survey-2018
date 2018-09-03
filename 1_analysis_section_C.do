@@ -1,7 +1,7 @@
 ********************************************************************************
-* Project:	Leibniz PhD Network Survey 2018
-* Task:		Generate bar graphs for questions with multiple answers
-* Authors:	Survey Working Group
+* Project:  Leibniz PhD Network Survey 2018
+* Task:     Generate bar graphs for questions with multiple answers
+* Authors:  Survey Working Group
 ********************************************************************************
 
 * ==============================================================================
@@ -421,6 +421,7 @@ summ `ordered_var' [aw=weight]
 tabstat `ordered_var'
 
 capture drop c_3a_n_rec c_3c_n_rec c_3b_n_rec c_3d_n_rec c_3e_n_rec c_3f_n_rec
+local ordered_var_pct ""
 foreach var of varlist `ordered_var' {
 	* little trick to get percentages and not proportions
 	recode `var'(1=100), gen(`var'_rec)
@@ -458,12 +459,19 @@ graph hbar (mean) `ordered_var_pct' [aw=weight], ///
 		)) ///
 	bargap(10) ///
 	yscale(noline) ///
+	bar(1, color("43 140 190")) /// 
+	bar(2, color("43 140 190")) /// 
+	bar(3, color("43 140 190")) ///
+	bar(4, color("43 140 190")) ///
+	bar(5, color("43 140 190")) ///
+	bar(6, color("43 140 190")) ///
 	ytitle("Percentage of doctoral candidates") ///
 	legend(off)
 graph export "${figures_pdf}c_3_bar.pdf", replace
 
 * Export graph data
-estpost tabstat `ordered_var_pct', statistics(mean) columns(statistics)
+estpost tabstat `ordered_var_pct' [aw=weight], ///
+	statistics(mean) columns(statistics)
 esttab using "${figures_data}c_3_bar.csv", ///
 	cells("mean(fmt(2))") ///
 	coeflabel( ///
@@ -477,6 +485,45 @@ esttab using "${figures_data}c_3_bar.csv", ///
 	csv noobs plain collabels(none) unstack nomtitles ///
 	replace
 
+* _______________________________________________________________________
+* Tables
+
+* By year of PhD ----------------------------------------------------
+local ordered_var_pct "c_3a_n_rec c_3c_n_rec c_3b_n_rec c_3d_n_rec c_3e_n_rec c_3f_n_rec"
+
+estpost tabstat `ordered_var_pct' [aw=weight], ///
+	by(yearphd) statistics(mean) columns(statistics) nototal 
+	
+esttab . using "${tables_tex}c_3_yearphd.tex", ///
+	cells("mean(fmt(0))") unstack noobs nomtitles nonumbers collabels(none) ///
+	booktabs fragment ///
+	varlabels( ///
+		c_3a_n_rec "Build a network" ///
+		c_3c_n_rec "Seek advice" ///
+		c_3b_n_rec "Specific training" ///
+		c_3d_n_rec "Constant job search" ///
+		c_3e_n_rec "Apply to job already" ///
+		c_3f_n_rec "None") ///
+	replace
+
+* By parental status ------------------------------------------------
+local ordered_var_pct "c_3a_n_rec c_3c_n_rec c_3b_n_rec c_3d_n_rec c_3e_n_rec c_3f_n_rec"
+
+estpost tabstat `ordered_var_pct' [aw=weight], ///
+	by(parent) statistics(mean) columns(statistics) nototal 
+	
+esttab . using "${tables_tex}c_3_parent.tex", ///
+	cells("mean(fmt(0))") unstack noobs nomtitles nonumbers collabels(none) ///
+	booktabs fragment ///
+	varlabels( ///
+		c_3a_n_rec "Build a network" ///
+		c_3c_n_rec "Seek advice" ///
+		c_3b_n_rec "Specific training" ///
+		c_3d_n_rec "Constant job search" ///
+		c_3e_n_rec "Apply to job already" ///
+		c_3f_n_rec "None") ///
+	replace
+	
 * ==============================================================================
 * C4: Preferred area after the PhD
 * ==============================================================================
@@ -500,23 +547,127 @@ foreach action of varlist c_4a_n-c_4f_n {
 	}
 }
 
-* _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-* Print cross-tables
-
-* Relevant factors: section and gender
-foreach var of varlist c_3a_n-c_3f_n {
-	tab section `var' [aw=weight], nofreq co
-	tab female `var' [aw=weight], nofreq co
-}
 * _______________________________________________________________________
-* Graphs
+* Graph
 
-*...
+* Overall results ---------------------------------------------------
+
+local ordered_var "c_4a_n c_4e_n c_4b_n c_4d_n c_4c_n c_4f_n"
+summ `ordered_var' [aw=weight]
+
+tabstat `ordered_var'
+
+capture drop c_4a_n_rec c_4e_n_rec c_4b_n_rec c_4d_n_rec c_4c_n_rec c_4f_n_rec
+local ordered_var_pct ""
+foreach var of varlist `ordered_var' {
+	* little trick to get percentages and not proportions
+	recode `var'(1=100), gen(`var'_rec)
+	_crcslbl `var'_rec `var'
+	local ordered_var_pct "`ordered_var_pct' `var'_rec"
+}
+disp "`ordered_var_pct'"
+
+* Display labels in order
+
+foreach var of varlist `ordered_var' {
+	local label : variable label `var'
+	disp "`label'"
+}
+
+* Output:
+/*
+Preferred area: Academia, scientific
+Preferred area: Private scientific jobs in industry 
+Preferred area: Science-related public work 
+Preferred area: Private non-scientific job 
+Preferred area: Publically-funded non-scientific job 
+Preferred area: Don't know
+*/
+
+* Generate and export the graph
+graph hbar (mean) `ordered_var_pct' [aw=weight], ///
+	showyvars  /// 
+	yvaroptions(relabel( ///
+		1 "Academia" ///
+		2 "Private scientific jobs" ///
+		3 "Science-related public work" ///
+		4 "Private non-scientific job" ///
+		5 "Publically-funded non-scientific job" ///
+		6 "Don't know" /// 
+		)) ///
+	bargap(10) ///
+	yscale(noline) ///
+	bar(1, color("43 140 190")) /// 
+	bar(2, color("43 140 190")) /// 
+	bar(3, color("43 140 190")) ///
+	bar(4, color("43 140 190")) ///
+	bar(5, color("43 140 190")) ///
+	bar(6, color("43 140 190")) ///
+	ytitle("Percentage of doctoral candidates") ///
+	legend(off)
+	
+graph export "${figures_pdf}c_4_bar.pdf", replace
+
+* Export graph data
+estpost tabstat `ordered_var_pct' [aw=weight], statistics(mean) columns(statistics)
+esttab using "${figures_data}c_4_bar.csv", ///
+	cells("mean(fmt(2))") ///
+	coeflabel( ///
+		c_4a_n_rec "Academia" ///
+		c_4e_n_rec "Private scientific jobs" ///
+		c_4b_n_rec "Science-related public work" ///
+		c_4d_n_rec "Private non-scientific job" ///
+		c_4c_n_rec "Publically-funded non-scientific job" ///
+		c_4f_n_rec "Don't know" ///
+		) ///
+	csv noobs plain collabels(none) unstack nomtitles ///
+	replace
+
+* _______________________________________________________________________
+* Tables
+
+* By section --------------------------------------------------------
+
+local ordered_var_pct "c_4a_n_rec c_4e_n_rec c_4b_n_rec c_4d_n_rec c_4c_n_rec c_4f_n_rec"
+
+estpost tabstat `ordered_var_pct' [aw=weight], ///
+	by(section) statistics(mean) columns(statistics) nototal 
+	
+esttab . using "${tables_tex}c_4_section.tex", ///
+	cells("mean(fmt(0))") unstack noobs nomtitles nonumbers collabels(none) ///
+	booktabs fragment ///
+	varlabels( ///
+		c_4a_n_rec "Academia" ///
+		c_4e_n_rec "Private scientific jobs" ///
+		c_4b_n_rec "Science-related public work" ///
+		c_4d_n_rec "Private non-scientific job" ///
+		c_4c_n_rec "Publically-funded non-scientific job" ///
+		c_4f_n_rec "Don't know") ///
+	replace
+
+* By gender ---------------------------------------------------------
+
+local ordered_var_pct "c_4a_n_rec c_4e_n_rec c_4b_n_rec c_4d_n_rec c_4c_n_rec c_4f_n_rec"
+
+estpost tabstat `ordered_var_pct' [aw=weight], ///
+	by(female) statistics(mean) columns(statistics) nototal 
+	
+esttab . using "${tables_tex}c_4_gender.tex", ///
+	cells("mean(fmt(0))") unstack noobs nomtitles nonumbers collabels(none) ///
+	booktabs fragment ///
+	varlabels( ///
+		c_4a_n_rec "Academia" ///
+		c_4e_n_rec "Private scientific jobs" ///
+		c_4b_n_rec "Science-related public work" ///
+		c_4d_n_rec "Private non-scientific job" ///
+		c_4c_n_rec "Publically-funded non-scientific job" ///
+		c_4f_n_rec "Don't know") ///
+	replace
+
 
 * ==============================================================================
 * C4.1: Reasons for not pursuing a career in academia
 * ==============================================================================
-
 * _______________________________________________________________________
 * ANOVA
 
@@ -576,9 +727,242 @@ Significant factors according to ANOVA: ***
 */
 
 * _______________________________________________________________________
-* Graphs
+* Graph
 
-*...
+* Overall results ---------------------------------------------------
+
+local ordered_var "c_4_1e_n  c_4_1j_n c_4_1i_n c_4_1b_n c_4_1k_n c_4_1d_n c_4_1h_n c_4_1m_n c_4_1a_n c_4_1c_n c_4_1g_n c_4_1f_n"
+summ `ordered_var' [aw=weight]
+
+tabstat `ordered_var'
+
+capture drop c_4_1e_n_rec c_4_1j_n_rec c_4_1i_n_rec c_4_1b_n_rec c_4_1k_n_rec c_4_1d_n_rec c_4_1h_n_rec c_4_1m_n_rec c_4_1a_n_rec c_4_1c_n_rec c_4_1g_n_rec c_4_1f_n_rec
+local ordered_var_pct ""
+foreach var of varlist `ordered_var' {
+	* little trick to get percentages and not proportions
+	recode `var'(1=100), gen(`var'_rec)
+	_crcslbl `var'_rec `var'
+	local ordered_var_pct "`ordered_var_pct' `var'_rec"
+}
+disp "`ordered_var_pct'"
+
+* Display labels in order
+foreach var of varlist `ordered_var_pct' {
+	local label : variable label `var'
+	disp "`label'"
+}
+
+* Output:
+/*
+Reasons against academia: unlimited working contract
+Reasons against academia: resident changes
+Reasons against academia: payment
+Reasons against academia: competetive
+Reasons against academia: familiy responsibilities
+Reasons against academia: low chance to get post doc position
+Reasons against academia: new challenge 
+Reasons against academia: qualification
+Reasons against academia: Interest
+Reasons against academia: organize work
+Reasons against academia: grades
+Reasons against academia: supervisor
+*/
+
+graph hbar (mean) `ordered_var_pct' [aw=weight], ///
+	showyvars  /// 
+	yvaroptions(relabel( ///
+		1 "Limited working contracts" ///
+		2 "Changes of residence" ///
+		3 "Other sectors paid better" ///
+		4 "Too competitive" ///
+		5 "Familiy responsibilities" ///
+		6 "Low chance to get post doc position" /// 
+		7 "Looking for a new challenge" /// 
+		8 "Do not feel qualified enough" /// 
+		9 "No interest" /// 
+		10 "Hard to organize my own work" /// 
+		11 "Don't have the required grades" /// 
+		12 "Supervisor advised to leave academia" /// 
+		)) ///
+	bargap(10) ///
+	yscale(noline) ///
+	bar(1, color("43 140 190")) /// 
+	bar(2, color("43 140 190")) /// 
+	bar(3, color("43 140 190")) ///
+	bar(4, color("43 140 190")) ///
+	bar(5, color("43 140 190")) ///
+	bar(6, color("43 140 190")) ///
+	bar(7, color("43 140 190")) ///
+	bar(8, color("43 140 190")) ///
+	bar(9, color("43 140 190")) ///
+	bar(10, color("43 140 190")) ///
+	bar(11, color("43 140 190")) ///
+	bar(12, color("43 140 190")) ///
+	ytitle("Percentage of doctoral candidates") ///
+	legend(off)
+graph export "${figures_pdf}c_4-1_bar.pdf", replace
+
+* Export graph data
+estpost tabstat `ordered_var_pct' [aw=weight], ///
+	statistics(mean) columns(statistics)
+esttab using "${figures_data}c_4-1_bar.csv", ///
+	cells("mean(fmt(2))") ///
+	coeflabel( ///
+		c_4_1e_n_rec "Limited working contracts" ///
+		c_4_1j_n_rec "Changes of residence" ///
+		c_4_1i_n_rec "Other sectors paid better" ///
+		c_4_1b_n_rec "Too competitive" ///
+		c_4_1k_n_rec "Familiy responsibilities" ///
+		c_4_1d_n_rec "Low chance to get post doc position" ///
+		c_4_1h_n_rec "Looking for a new challenge" ///
+		c_4_1m_n_rec "Do not feel qualified enough" ///
+		c_4_1a_n_rec "No interest" ///
+		c_4_1c_n_rec "Hard to organize my own work" /// 
+		c_4_1g_n_rec "Don't have the required grades" /// 
+		c_4_1f_n_rec "Supervisor advised to leave academia" /// 
+		) ///
+	csv noobs plain collabels(none) unstack nomtitles ///
+	replace
+
+* _______________________________________________________________________
+* Tables
+
+* By section --------------------------------------------------------
+
+local ordered_var_pct "c_4_1e_n_rec c_4_1j_n_rec c_4_1i_n_rec c_4_1b_n_rec c_4_1k_n_rec"
+
+estpost tabstat `ordered_var_pct' [aw=weight], ///
+	by(section) statistics(mean) columns(statistics) nototal 
+	
+esttab . using "${tables_tex}c_4-1_section.tex", ///
+	cells("mean(fmt(0))") unstack noobs nomtitles nonumbers collabels(none) ///
+	booktabs fragment ///
+	varlabels( ///
+		c_4_1e_n_rec "Limited working contracts" ///
+		c_4_1j_n_rec "Changes of residence" ///
+		c_4_1i_n_rec "Other sectors paid better" ///
+		c_4_1b_n_rec "Too competitive" ///
+		c_4_1k_n_rec "Familiy responsibilities") ///
+	replace
+
+* By year of PhD ----------------------------------------------------
+
+local ordered_var_pct "c_4_1e_n_rec c_4_1j_n_rec c_4_1i_n_rec c_4_1b_n_rec c_4_1k_n_rec"
+
+estpost tabstat `ordered_var_pct' [aw=weight], ///
+	by(yearphd) statistics(mean) columns(statistics) nototal 
+	
+esttab . using "${tables_tex}c_4-1_yearphd.tex", ///
+	cells("mean(fmt(0))") unstack noobs nomtitles nonumbers collabels(none) ///
+	booktabs fragment ///
+	varlabels( ///
+		c_4_1e_n_rec "Limited working contracts" ///
+		c_4_1j_n_rec "Changes of residence" ///
+		c_4_1i_n_rec "Other sectors paid better" ///
+		c_4_1b_n_rec "Too competitive" ///
+		c_4_1k_n_rec "Familiy responsibilities") ///
+	replace
+
+* For internationals ------------------------------------------------
+
+local ordered_var_pct "c_4_1e_n_rec c_4_1j_n_rec c_4_1i_n_rec c_4_1b_n_rec c_4_1k_n_rec"
+
+estpost tabstat `ordered_var_pct' [aw=weight], ///
+	by(inter) statistics(mean) columns(statistics) nototal 
+	
+esttab . using "${tables_tex}c_4-1_inter.tex", ///
+	cells("mean(fmt(0))") unstack noobs nomtitles nonumbers collabels(none) ///
+	booktabs fragment ///
+	varlabels( ///
+		c_4_1e_n_rec "Limited working contracts" ///
+		c_4_1j_n_rec "Changes of residence" ///
+		c_4_1i_n_rec "Other sectors paid better" ///
+		c_4_1b_n_rec "Too competitive" ///
+		c_4_1k_n_rec "Familiy responsibilities") ///
+	replace
+
+* ==============================================================================
+* C5: Professional training offered
+* ==============================================================================
+
+* _______________________________________________________________________
+* Graph
+
+* Overall results ---------------------------------------------------
+
+capture drop c_5a_n_rec c_5f_n_rec c_5g_n_rec c_5c_n_rec c_5i_n_rec c_5b_n_rec c_5e_n_rec c_5h_n_rec c_5d_n_rec
+foreach var of varlist c_5a_n-c_5i_n {
+	recode `var' (1 = 100) (99 = 0), gen(`var'_rec)
+	_crcslbl `var'_rec `var'
+}
+
+local ordered_var_pct "c_5a_n_rec c_5f_n_rec c_5g_n_rec c_5c_n_rec c_5i_n_rec c_5b_n_rec c_5e_n_rec c_5h_n_rec c_5d_n_rec"
+summ `ordered_var_pct' [aw=weight]
+
+* Display labels in order
+foreach var of varlist `ordered_var_pct' {
+	local label : variable label `var'
+	disp "`label'"
+}
+* Output:
+/*
+Professional trainings: Scientific writing
+Professional trainings: scientific methods
+Professional trainings: graduate school
+Professional trainings: German
+Professional trainings: other soft skills
+Professional trainings:  English
+Professional trainings: career development
+Professional trainings: grant application
+Professional trainings: Other language
+*/
+
+graph hbar (mean) `ordered_var_pct' [aw=weight], ///
+	showyvars  /// 
+	yvaroptions(relabel( ///
+		1 "Scientific writing" ///
+		2 "Scientific methods" ///
+		3 "Graduate school" ///
+		4 "German" ///
+		5 "Other soft skills" ///
+		6 "English" /// 
+		7 "Career development" ///
+		8 "Grant application" ///
+		9 "Other language" /// 
+		)) ///
+	bargap(10) ///
+	yscale(noline) ///
+	bar(1, color("43 140 190")) ///
+	bar(2, color("43 140 190")) ///
+	bar(3, color("43 140 190")) ///
+	bar(4, color("43 140 190")) ///
+	bar(5, color("43 140 190")) ///
+	bar(6, color("43 140 190")) ///
+	bar(7, color("43 140 190")) ///
+	bar(8, color("43 140 190")) ///
+	bar(9, color("43 140 190")) ///
+	ytitle("Percentage of doctoral candidates") ///
+	legend(off)
+graph export "${figures_pdf}c_5_bar.pdf", replace
+
+* Export graph data
+estpost tabstat `ordered_var_pct' [aw=weight], ///
+	statistics(mean) columns(statistics)
+esttab using "${figures_data}c_5_bar.csv", ///
+	cells("mean(fmt(2))") ///
+	coeflabel( ///
+		c_5a_n_rec "Scientific writing" ///
+		c_5f_n_rec "Scientific methods" ///
+		c_5g_n_rec "Graduate school" ///
+		c_5c_n_rec "German" ///
+		c_5i_n_rec "Other soft skills" ///
+		c_5b_n_rec "English" ///
+		c_5e_n_rec "Career development" ///
+		c_5h_n_rec "Grant application" ///
+		c_5d_n_rec "Other language" ///
+		) ///
+	csv noobs plain collabels(none) unstack nomtitles ///
+	replace
 
 * ==============================================================================
 * C5.2: Professional training needed
@@ -648,9 +1032,78 @@ Significant factors according to ANOVA: ***
 */
 
 * _______________________________________________________________________
-* Graphs
+* Graph
 
-*...
+capture drop c_5_2e_n_rec c_5_2g_n_rec c_5_2a_n_rec c_5_2h_n_rec c_5_2b_n_rec c_5_2c_n_rec c_5_2f_n_rec c_5_2d_n_rec
+foreach var of varlist c_5_2a_n-c_5_2h_n {
+	recode `var' (1 = 100), gen(`var'_rec)
+	_crcslbl `var'_rec `var'
+}
+
+local ordered_var_pct "c_5_2e_n_rec c_5_2g_n_rec c_5_2a_n_rec c_5_2h_n_rec c_5_2b_n_rec c_5_2c_n_rec c_5_2f_n_rec c_5_2d_n_rec"
+summ `ordered_var_pct' [aw=weight]
+
+* Display labels in order
+foreach var of varlist `ordered_var_pct' {
+	local label : variable label `var'
+	disp "`label'"
+}
+
+* Output
+/*
+Need training: scientific methods
+Need training: grant application
+Need training: scientific writing
+Need training: other soft skills
+Need training: English
+Need training: German
+Need training: graduate school
+Need training: other language
+*/
+
+graph hbar (mean) `ordered_var_pct' [aw=weight], ///
+	showyvars  /// 
+	yvaroptions(relabel( ///
+		1 "Scientific methods" ///
+		2 "Grant application" ///
+		3 "Scientific writing" ///
+		4 "Other soft skills" ///
+		5 "English" ///
+		6 "German" /// 
+		7 "Graduate school" ///
+		8 "Other language" ///
+		)) ///
+	bargap(10) ///
+	yscale(noline) ///
+	bar(1, color("43 140 190")) ///
+	bar(2, color("43 140 190")) ///
+	bar(3, color("43 140 190")) ///
+	bar(4, color("43 140 190")) ///
+	bar(5, color("43 140 190")) ///
+	bar(6, color("43 140 190")) ///
+	bar(7, color("43 140 190")) ///
+	bar(8, color("43 140 190")) ///
+	ytitle("Percentage of doctoral candidates") ///
+	legend(off)
+graph export "${figures_pdf}c_5-2_bar.pdf", replace
+
+* Export graph data
+estpost tabstat `ordered_var_pct' [aw=weight], ///
+	statistics(mean) columns(statistics)
+esttab using "${figures_data}c_5-2_bar.csv", ///
+	cells("mean(fmt(2))") ///
+	coeflabel( ///
+		c_5_2e_n_rec "Scientific methods" ///
+		c_5_2g_n_rec "Grant application" ///
+		c_5_2a_n_rec "Scientific writing" ///
+		c_5_2h_n_rec "Other soft skills" ///
+		c_5_2b_n_rec "English" ///
+		c_5_2c_n_rec "German" ///
+		c_5_2f_n_rec "Graduate school" ///
+		c_5_2d_n_rec "Other language" ///
+		) ///
+	csv noobs plain collabels(none) unstack nomtitles ///
+	replace
 
 * ==============================================================================
 * C6: Information about career options
