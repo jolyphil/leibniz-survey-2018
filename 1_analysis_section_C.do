@@ -1,6 +1,6 @@
 ********************************************************************************
 * Project:  Leibniz PhD Network Survey 2018
-* Task:     Generate bar graphs for questions with multiple answers
+* Task:     Export results (figures and tables) for section C
 * Authors:  Survey Working Group
 ********************************************************************************
 
