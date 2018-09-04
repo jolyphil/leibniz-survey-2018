@@ -50,15 +50,15 @@ label define sectionlb			///
 	5 "E", modify
 label values section sectionlb
 
-* Female ------------------------------------------------------------
+* gender ------------------------------------------------------------
 
-recode a_5 (1=1)(2=0)(else=.), gen(female)
-_crcslbl female a_5
+recode a_5 (1=1)(2=0)(else=.), gen(gender)
+_crcslbl gender a_5
 
-label define femalelb	///
+label define genderlb	///
 	0 "Male"			///
 	1 "Female", modify
-label values female femalelb
+label values gender genderlb
 
 * Year of PhD -------------------------------------------------------
 
@@ -291,7 +291,6 @@ foreach var of varlist section contract {
 		collabels(none) nomtitles plain ///
 	replace 
 }
-
 * ==============================================================================
 * C2: Personal mentor
 * ==============================================================================
@@ -300,7 +299,7 @@ foreach var of varlist section contract {
 
 * Test intergroup differences ---------------------------------------
 
-local iv "section female yearphd inter parent contract"
+local iv "section gender yearphd inter parent contract"
 
 foreach var of varlist `iv' {
 	local label : variable label `var'
@@ -330,7 +329,7 @@ label values c_2_rec c_2_reclb
 * Export graph
 graph pie [aw=weight], over(c_2_rec) ///
 	pie(2, color("43 140 190")) ///
-	pie(3, color(gs12))
+	pie(3, color(gs10))
 graph export "${figures_pdf}c_2_pie.pdf", replace
 
 * Export graph data
@@ -342,24 +341,25 @@ esttab using "${figures_data}c_2_pie.csv", ///
 
 * By year of PhD  ---------------------------------------------------
 
-* Export graph
-graph hbar (count) [aw=weight], ///
-	over(c_2_rec) over(yearphd) ///
-	asyvars percentages ytitle("Percentage of doctoral candidates") ///
-	bar(2, color("43 140 190")) ///
-	bar(3, color(gs12)) ///
-	stack ///
-	xsize(8)
-graph export "${figures_pdf}c_2_yearphd_bar.pdf", replace
+foreach var of varlist yearphd {
 
-* Export graph data
-estpost tabulate c_2_rec yearphd [aw=weight], nototal
-esttab using "${figures_data}c_2_yearphd_bar.csv", ///
-	cell(colpct(fmt(2))) unstack noobs  varlabels(`e(labels)') ///
-	collabels(none) nomtitles plain ///
-replace 
+	* Export graph
+	graph hbar (count) [aw=weight], ///
+		over(c_2_rec) over(`var') ///
+		asyvars percentages ytitle("Percentage of doctoral candidates") ///
+		bar(2, color("43 140 190")) ///
+		bar(3, color(gs10)) ///
+		stack ///
+		xsize(8)
+	graph export "${figures_pdf}c_2_`var'_bar.pdf", replace
 
-
+	* Export graph data
+	estpost tabulate c_2_rec `var' [aw=weight], nototal
+	esttab using "${figures_data}c_2_`var'_bar.csv", ///
+		cell(colpct(fmt(2))) unstack noobs  varlabels(`e(labels)') ///
+		collabels(none) nomtitles plain ///
+	replace 
+}
 * ==============================================================================
 * C3: Actions taken to prepare future career
 * ==============================================================================
@@ -368,7 +368,7 @@ replace
 * ANOVA
 * Test intergroup differences ---------------------------------------
 
-local iv "section female yearphd inter parent contract"
+local iv "section gender yearphd inter parent contract"
 
 foreach action of varlist c_3a_n-c_3f_n {
 	local label : variable label `action'
@@ -488,42 +488,26 @@ esttab using "${figures_data}c_3_bar.csv", ///
 * _______________________________________________________________________
 * Tables
 
-* By year of PhD ----------------------------------------------------
+* By year of PhD, parental status -----------------------------------
+
 local ordered_var_pct "c_3a_n_rec c_3c_n_rec c_3b_n_rec c_3d_n_rec c_3e_n_rec c_3f_n_rec"
 
-estpost tabstat `ordered_var_pct' [aw=weight], ///
-	by(yearphd) statistics(mean) columns(statistics) nototal 
-	
-esttab . using "${tables_tex}c_3_yearphd.tex", ///
-	cells("mean(fmt(0))") unstack noobs nomtitles nonumbers collabels(none) ///
-	booktabs fragment ///
-	varlabels( ///
-		c_3a_n_rec "Build a network" ///
-		c_3c_n_rec "Seek advice" ///
-		c_3b_n_rec "Specific training" ///
-		c_3d_n_rec "Constant job search" ///
-		c_3e_n_rec "Apply to job already" ///
-		c_3f_n_rec "None") ///
-	replace
-
-* By parental status ------------------------------------------------
-local ordered_var_pct "c_3a_n_rec c_3c_n_rec c_3b_n_rec c_3d_n_rec c_3e_n_rec c_3f_n_rec"
-
-estpost tabstat `ordered_var_pct' [aw=weight], ///
-	by(parent) statistics(mean) columns(statistics) nototal 
-	
-esttab . using "${tables_tex}c_3_parent.tex", ///
-	cells("mean(fmt(0))") unstack noobs nomtitles nonumbers collabels(none) ///
-	booktabs fragment ///
-	varlabels( ///
-		c_3a_n_rec "Build a network" ///
-		c_3c_n_rec "Seek advice" ///
-		c_3b_n_rec "Specific training" ///
-		c_3d_n_rec "Constant job search" ///
-		c_3e_n_rec "Apply to job already" ///
-		c_3f_n_rec "None") ///
-	replace
-	
+foreach var of varlist yearphd parent {
+	estpost tabstat `ordered_var_pct' [aw=weight], ///
+		by(`var') statistics(mean) columns(statistics) nototal 
+		
+	esttab . using "${tables_tex}c_3_`var'.tex", ///
+		cells("mean(fmt(0))") unstack noobs nomtitles nonumbers collabels(none) ///
+		booktabs fragment ///
+		varlabels( ///
+			c_3a_n_rec "Build a network" ///
+			c_3c_n_rec "Seek advice" ///
+			c_3b_n_rec "Specific training" ///
+			c_3d_n_rec "Constant job search" ///
+			c_3e_n_rec "Apply to job already" ///
+			c_3f_n_rec "None") ///
+		replace
+}	
 * ==============================================================================
 * C4: Preferred area after the PhD
 * ==============================================================================
@@ -533,7 +517,7 @@ esttab . using "${tables_tex}c_3_parent.tex", ///
 
 * Test intergroup differences ---------------------------------------
 
-local iv "section female yearphd inter parent contract"
+local iv "section gender yearphd inter parent contract"
 
 foreach action of varlist c_4a_n-c_4f_n {
 	local label : variable label `action'
@@ -626,45 +610,26 @@ esttab using "${figures_data}c_4_bar.csv", ///
 * _______________________________________________________________________
 * Tables
 
-* By section --------------------------------------------------------
+* By section, gender ------------------------------------------------
 
 local ordered_var_pct "c_4a_n_rec c_4e_n_rec c_4b_n_rec c_4d_n_rec c_4c_n_rec c_4f_n_rec"
 
-estpost tabstat `ordered_var_pct' [aw=weight], ///
-	by(section) statistics(mean) columns(statistics) nototal 
-	
-esttab . using "${tables_tex}c_4_section.tex", ///
-	cells("mean(fmt(0))") unstack noobs nomtitles nonumbers collabels(none) ///
-	booktabs fragment ///
-	varlabels( ///
-		c_4a_n_rec "Academia" ///
-		c_4e_n_rec "Private scientific jobs" ///
-		c_4b_n_rec "Science-related public work" ///
-		c_4d_n_rec "Private non-scientific job" ///
-		c_4c_n_rec "Publically-funded non-scientific job" ///
-		c_4f_n_rec "Don't know") ///
-	replace
-
-* By gender ---------------------------------------------------------
-
-local ordered_var_pct "c_4a_n_rec c_4e_n_rec c_4b_n_rec c_4d_n_rec c_4c_n_rec c_4f_n_rec"
-
-estpost tabstat `ordered_var_pct' [aw=weight], ///
-	by(female) statistics(mean) columns(statistics) nototal 
-	
-esttab . using "${tables_tex}c_4_gender.tex", ///
-	cells("mean(fmt(0))") unstack noobs nomtitles nonumbers collabels(none) ///
-	booktabs fragment ///
-	varlabels( ///
-		c_4a_n_rec "Academia" ///
-		c_4e_n_rec "Private scientific jobs" ///
-		c_4b_n_rec "Science-related public work" ///
-		c_4d_n_rec "Private non-scientific job" ///
-		c_4c_n_rec "Publically-funded non-scientific job" ///
-		c_4f_n_rec "Don't know") ///
-	replace
-
-
+foreach var of varlist section gender {
+	estpost tabstat `ordered_var_pct' [aw=weight], ///
+		by(`var') statistics(mean) columns(statistics) nototal 
+		
+	esttab . using "${tables_tex}c_4_`var'.tex", ///
+		cells("mean(fmt(0))") unstack noobs nomtitles nonumbers collabels(none) ///
+		booktabs fragment ///
+		varlabels( ///
+			c_4a_n_rec "Academia" ///
+			c_4e_n_rec "Private scientific jobs" ///
+			c_4b_n_rec "Science-related public work" ///
+			c_4d_n_rec "Private non-scientific job" ///
+			c_4c_n_rec "Publically-funded non-scientific job" ///
+			c_4f_n_rec "Don't know") ///
+		replace
+}
 * ==============================================================================
 * C4.1: Reasons for not pursuing a career in academia
 * ==============================================================================
@@ -675,7 +640,7 @@ esttab . using "${tables_tex}c_4_gender.tex", ///
 
 * Five main factors
 local factors "c_4_1e_n c_4_1j_n c_4_1i_n c_4_1b_n c_4_1k_n"
-local iv "section female yearphd inter parent contract"
+local iv "section gender yearphd inter parent contract"
 
 foreach factor of varlist `factors' {
 	local label : variable label `factor'
@@ -827,60 +792,28 @@ esttab using "${figures_data}c_4-1_bar.csv", ///
 * _______________________________________________________________________
 * Tables
 
-* By section --------------------------------------------------------
+* By section, year of phd, internationals ---------------------------
 
 local ordered_var_pct "c_4_1e_n_rec c_4_1j_n_rec c_4_1i_n_rec c_4_1b_n_rec c_4_1k_n_rec"
 
-estpost tabstat `ordered_var_pct' [aw=weight], ///
-	by(section) statistics(mean) columns(statistics) nototal 
-	
-esttab . using "${tables_tex}c_4-1_section.tex", ///
-	cells("mean(fmt(0))") unstack noobs nomtitles nonumbers collabels(none) ///
-	booktabs fragment ///
-	varlabels( ///
-		c_4_1e_n_rec "Limited working contracts" ///
-		c_4_1j_n_rec "Changes of residence" ///
-		c_4_1i_n_rec "Other sectors paid better" ///
-		c_4_1b_n_rec "Too competitive" ///
-		c_4_1k_n_rec "Familiy responsibilities") ///
-	replace
+foreach var of varlist section yearphd inter {
 
-* By year of PhD ----------------------------------------------------
+	estpost tabstat `ordered_var_pct' [aw=weight], ///
+		by(`var') statistics(mean) columns(statistics) nototal 
+		
+	esttab . using "${tables_tex}c_4-1_`var'.tex", ///
+		cells("mean(fmt(0))") unstack noobs nomtitles nonumbers ///
+		collabels(none) ///
+		booktabs fragment ///
+		varlabels( ///
+			c_4_1e_n_rec "Limited working contracts" ///
+			c_4_1j_n_rec "Changes of residence" ///
+			c_4_1i_n_rec "Other sectors paid better" ///
+			c_4_1b_n_rec "Too competitive" ///
+			c_4_1k_n_rec "Familiy responsibilities") ///
+		replace
 
-local ordered_var_pct "c_4_1e_n_rec c_4_1j_n_rec c_4_1i_n_rec c_4_1b_n_rec c_4_1k_n_rec"
-
-estpost tabstat `ordered_var_pct' [aw=weight], ///
-	by(yearphd) statistics(mean) columns(statistics) nototal 
-	
-esttab . using "${tables_tex}c_4-1_yearphd.tex", ///
-	cells("mean(fmt(0))") unstack noobs nomtitles nonumbers collabels(none) ///
-	booktabs fragment ///
-	varlabels( ///
-		c_4_1e_n_rec "Limited working contracts" ///
-		c_4_1j_n_rec "Changes of residence" ///
-		c_4_1i_n_rec "Other sectors paid better" ///
-		c_4_1b_n_rec "Too competitive" ///
-		c_4_1k_n_rec "Familiy responsibilities") ///
-	replace
-
-* For internationals ------------------------------------------------
-
-local ordered_var_pct "c_4_1e_n_rec c_4_1j_n_rec c_4_1i_n_rec c_4_1b_n_rec c_4_1k_n_rec"
-
-estpost tabstat `ordered_var_pct' [aw=weight], ///
-	by(inter) statistics(mean) columns(statistics) nototal 
-	
-esttab . using "${tables_tex}c_4-1_inter.tex", ///
-	cells("mean(fmt(0))") unstack noobs nomtitles nonumbers collabels(none) ///
-	booktabs fragment ///
-	varlabels( ///
-		c_4_1e_n_rec "Limited working contracts" ///
-		c_4_1j_n_rec "Changes of residence" ///
-		c_4_1i_n_rec "Other sectors paid better" ///
-		c_4_1b_n_rec "Too competitive" ///
-		c_4_1k_n_rec "Familiy responsibilities") ///
-	replace
-
+}
 * ==============================================================================
 * C5: Professional training offered
 * ==============================================================================
@@ -892,6 +825,7 @@ esttab . using "${tables_tex}c_4-1_inter.tex", ///
 
 capture drop c_5a_n_rec c_5f_n_rec c_5g_n_rec c_5c_n_rec c_5i_n_rec c_5b_n_rec c_5e_n_rec c_5h_n_rec c_5d_n_rec
 foreach var of varlist c_5a_n-c_5i_n {
+	* recode to get percentages
 	recode `var' (1 = 100) (99 = 0), gen(`var'_rec)
 	_crcslbl `var'_rec `var'
 }
@@ -973,7 +907,7 @@ esttab using "${figures_data}c_5_bar.csv", ///
 
 * Test intergroup differences ---------------------------------------
 
-local iv "section female yearphd inter parent contract"
+local iv "section gender yearphd inter parent contract"
 
 foreach training of varlist c_5_2a_n-c_5_2h_n {
 	local label : variable label `training'
@@ -1034,8 +968,11 @@ Significant factors according to ANOVA: ***
 * _______________________________________________________________________
 * Graph
 
+* Overall results ---------------------------------------------------
+
 capture drop c_5_2e_n_rec c_5_2g_n_rec c_5_2a_n_rec c_5_2h_n_rec c_5_2b_n_rec c_5_2c_n_rec c_5_2f_n_rec c_5_2d_n_rec
 foreach var of varlist c_5_2a_n-c_5_2h_n {
+	* recode to get percentages
 	recode `var' (1 = 100), gen(`var'_rec)
 	_crcslbl `var'_rec `var'
 }
@@ -1105,6 +1042,34 @@ esttab using "${figures_data}c_5-2_bar.csv", ///
 	csv noobs plain collabels(none) unstack nomtitles ///
 	replace
 
+* _______________________________________________________________________
+* Tables
+
+* By section, year of PhD -------------------------------------------
+
+local ordered_var_pct "c_5_2e_n_rec c_5_2g_n_rec c_5_2a_n_rec c_5_2h_n_rec c_5_2b_n_rec c_5_2c_n_rec c_5_2f_n_rec c_5_2d_n_rec"
+
+foreach var of varlist section yearphd {
+
+estpost tabstat `ordered_var_pct' [aw=weight], ///
+	by(`var') statistics(mean) columns(statistics) nototal 
+	
+esttab . using "${tables_tex}c_5-2_`var'.tex", ///
+	cells("mean(fmt(0))") unstack noobs nomtitles nonumbers collabels(none) ///
+	booktabs fragment ///
+	varlabels( ///
+		c_5_2e_n_rec "Scientific methods" ///
+		c_5_2g_n_rec "Grant application" ///
+		c_5_2a_n_rec "Scientific writing" ///
+		c_5_2h_n_rec "Other soft skills" ///
+		c_5_2b_n_rec "English" ///
+		c_5_2c_n_rec "German" ///
+		c_5_2f_n_rec "Graduate school" ///
+		c_5_2d_n_rec "Other language" ///
+		) ///
+	replace
+
+}	
 * ==============================================================================
 * C6: Information about career options
 * ==============================================================================
@@ -1116,7 +1081,7 @@ _crcslbl infocareer c_6_n
 * ANOVA
 * Test intergroup differences ---------------------------------------
 
-local iv "section female yearphd inter parent contract"
+local iv "section gender yearphd inter parent contract"
 
 foreach var of varlist `iv' {
 	local label : variable label `var'
@@ -1133,4 +1098,49 @@ Significant factors according to ANOVA (five most important factors): ***
 * _______________________________________________________________________
 * Graphs
 
-*...
+* Recode and reorder labels -----------------------------------------
+
+recode c_6_n (0 = 2), gen(c_6_n_rec)
+_crcslbl c_6_n_rec c_6_n
+
+label define c_6_n_reclb ///
+	1 "Yes" ///
+	2 "No" ///
+	99 "Don’t know", modify
+label values c_6_n_rec c_6_n_reclb
+
+* Overall results  --------------------------------------------------
+
+* Export graph
+graph pie [aw=weight], over(c_6_n_rec) ///
+	pie(2, color("43 140 190")) ///
+	pie(3, color(gs10))
+graph export "${figures_pdf}c_6_pie.pdf", replace
+
+* Export graph data
+estpost tabulate c_6_n_rec [aw=weight], nototal
+esttab using "${figures_data}c_6_pie.csv", ///
+	cells("pct(fmt(2))") csv noobs plain collabels(none) ///
+	unstack nomtitles ///
+	replace
+
+* By section  --------------------------------------------------
+
+foreach var of varlist section {
+	* Export graph
+	graph hbar (count) [aw=weight], ///
+		over(c_6_n_rec) over(`var') ///
+		asyvars percentages ytitle("Percentage of doctoral candidates") ///
+		bar(2, color("43 140 190")) ///
+		bar(3, color(gs10)) ///
+		stack ///
+		xsize(8)
+	graph export "${figures_pdf}c_6_`var'_bar.pdf", replace
+
+	* Export graph data
+	estpost tabulate c_6_n_rec `var'[aw=weight], nototal
+	esttab using "${figures_data}c_6_`var'_bar.csv", ///
+		cell(colpct(fmt(2))) unstack noobs  varlabels(`e(labels)') ///
+		collabels(none) nomtitles plain ///
+	replace 
+}
