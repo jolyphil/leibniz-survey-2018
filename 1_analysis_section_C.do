@@ -630,6 +630,44 @@ foreach var of varlist section gender {
 			c_4f_n_rec "Don't know") ///
 		replace
 }
+
+* _______________________________________________________________________
+* Logistic regression
+
+logit c_4a_n i.section gender i.yearphd inter parent contract [pw=weight]
+est store M1
+
+local vspacing "\hspace{0.4cm}"
+
+#delimit ;
+esttab M1 using "${tables_tex}c_4a_n_logit.tex", replace 
+	b(2) se(2) noomit nobase wide booktabs fragment nonum
+	alignment(S S) compress
+	mtitles("") 
+	collabels("\multicolumn{1}{c}{Coef.}" "\multicolumn{1}{c}{SE}")
+	eqlabels(none)
+	refcat( 
+		2.section "Section, A (ref.)" 
+		2.yearphd "Year of PhD, 1st year (ref.)" 
+		, nolabel 
+	) 
+	coeflabel( 
+		2.section "`vspacing'B"
+		3.section "`vspacing'C"
+		4.section "`vspacing'D"
+		5.section "`vspacing'E"
+		gender "Woman"
+		2.yearphd "`vspacing'2nd year"
+		3.yearphd "`vspacing'3rd year"
+		4.yearphd "`vspacing'4th year"
+		5.yearphd "`vspacing'5th year"
+		inter "International student"
+		parent "Parent"
+		contract "Working contract"
+		_cons "Intercept"
+	)
+;
+
 * ==============================================================================
 * C4.1: Reasons for not pursuing a career in academia
 * ==============================================================================
