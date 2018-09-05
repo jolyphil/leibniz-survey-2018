@@ -643,7 +643,7 @@ local vspacing "\hspace{0.4cm}"
 esttab M1 using "${tables_tex}c_4a_n_logit.tex", replace 
 	b(2) se(2) noomit nobase wide booktabs fragment nonum
 	alignment(S S) compress
-	mtitles("") 
+	nomtitles 
 	collabels("\multicolumn{1}{c}{Coef.}" "\multicolumn{1}{c}{SE}")
 	eqlabels(none)
 	refcat( 
@@ -660,7 +660,7 @@ esttab M1 using "${tables_tex}c_4a_n_logit.tex", replace
 		2.yearphd "`vspacing'2nd year"
 		3.yearphd "`vspacing'3rd year"
 		4.yearphd "`vspacing'4th year"
-		5.yearphd "`vspacing'5th year"
+		5.yearphd "`vspacing'5th year or more"
 		inter "International student"
 		parent "Parent"
 		contract "Working contract"
