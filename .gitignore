@@ -3,3 +3,5 @@
 *.png
 *.csv
 *.tex
+dir/*
+!dir/working_directory.do
