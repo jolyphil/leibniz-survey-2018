@@ -105,6 +105,206 @@ label define contractlb	///
 	1 "Working contract", modify
 label values contract contractlb
 
+* _______________________________________________________________________
+* Other variables
+
+* Age groups --------------------------------------------
+
+gen age_gr = a_6_g
+_crcslbl age_gr a_6_g
+
+label define age_grlb		///
+	1 "25 or younger"			///
+	2 "26 to 30"			///
+	3 "31 to 35"			///
+	4 "36 or older", modify
+label values age_gr age_grlb
+
+
+* ==============================================================================
+* D4: Desire more support (internationals)
+* ==============================================================================
+
+* _______________________________________________________________________
+* Logistic regressions
+
+* Model 1 -----------------------------------------------------------
+* logit d_4_n i.a_3 i.a_6_g i.a_1_duration_g contract parents [pw=weight]
+
+recode d_4_n (97 = 1), gen(ask_support)
+
+logit ask_support i.section i.age_gr i.yearphd contract parent [pw=weight]
+est store M1
+
+
+* Model 2 -----------------------------------------------------------
+* logit d_4_n d_2_n i.a_3 i.a_6_g i.a_1_duration_g contract parents [pw=weight] 
+* 	// including a regressor for having a contact person at the institute
+
+logit ask_support d_2_n i.section i.age_gr i.yearphd contract parent [pw=weight]
+est store M2
+
+* _______________________________________________________________________
+* Export table
+
+local vspacing "\hspace{0.4cm}"
+
+#delimit ;
+esttab M1 M2 using "${tables_tex}d_4_logit.tex", replace 
+	b(2) se(2) noomit nobase wide booktabs fragment
+	alignment(S S)
+	nomtitles 
+	collabels("\multicolumn{1}{c}{Coef.}" "\multicolumn{1}{c}{SE}")
+	eqlabels(none)
+	refcat( 
+		2.section "Section, A (ref.)" 
+		2.age_gr "Age group, 25 or younger (ref.)"
+		2.yearphd "Year of PhD, 1st year (ref.)" 
+		, nolabel 
+	) 
+	coeflabel( 
+		2.section "`vspacing'B"
+		3.section "`vspacing'C"
+		4.section "`vspacing'D"
+		5.section "`vspacing'E"
+		2.age_gr "`vspacing'26 to 30"
+		3.age_gr "`vspacing'31 to 35"
+		4.age_gr "`vspacing'36 or older"
+		2.yearphd "`vspacing'2nd year"
+		3.yearphd "`vspacing'3rd year"
+		4.yearphd "`vspacing'4th year"
+		5.yearphd "`vspacing'5th year or more"
+		contract "Working contract only"
+		parent "Parent"
+		d_2_n "Contact person"
+		_cons "Intercept"
+	)
+;
+#delimit cr
+
+estimates clear
+
+* ==============================================================================
+* D6: Language barriers at work (internationals)
+* ==============================================================================
+
+* _______________________________________________________________________
+* Logistic regressions
+
+* Model 1 -----------------------------------------------------------
+* logit d_6_n i.a_3 i.a_6_g i.a_1_duration_g contract parents [pw=weight]
+
+logit d_6_n i.section i.age_gr i.yearphd contract parent [pw=weight]
+est store M1
+
+* Model 2 -----------------------------------------------------------
+* logit d_6_n d_2_n i.a_3 i.a_6_g i.a_1_duration_g contract parents [pw=weight]
+
+logit d_6_n d_2_n i.section i.age_gr i.yearphd contract parent [pw=weight]
+est store M2
+
+* _______________________________________________________________________
+* Export table
+
+local vspacing "\hspace{0.4cm}"
+
+#delimit ;
+esttab M1 M2 using "${tables_tex}d_6_logit.tex", replace 
+	b(2) se(2) noomit nobase wide booktabs fragment
+	alignment(S S)
+	nomtitles 
+	collabels("\multicolumn{1}{c}{Coef.}" "\multicolumn{1}{c}{SE}")
+	eqlabels(none)
+	refcat( 
+		2.section "Section, A (ref.)" 
+		2.age_gr "Age group, 25 or younger (ref.)"
+		2.yearphd "Year of PhD, 1st year (ref.)" 
+		, nolabel 
+	) 
+	coeflabel( 
+		2.section "`vspacing'B"
+		3.section "`vspacing'C"
+		4.section "`vspacing'D"
+		5.section "`vspacing'E"
+		2.age_gr "`vspacing'26 to 30"
+		3.age_gr "`vspacing'31 to 35"
+		4.age_gr "`vspacing'36 or older"
+		2.yearphd "`vspacing'2nd year"
+		3.yearphd "`vspacing'3rd year"
+		4.yearphd "`vspacing'4th year"
+		5.yearphd "`vspacing'5th year or more"
+		contract "Working contract only"
+		parent "Parent"
+		d_2_n "Contact person"
+		_cons "Intercept"
+	)
+;
+#delimit cr
+
+estimates clear
+
+* ==============================================================================
+* D7f: More support needed for learning German (internationals)
+* ==============================================================================
+
+gen language= d_7f_n
+replace language=. if d_7f_n==99
+
+* _______________________________________________________________________
+* Logistic regressions
+
+* Model 1 -----------------------------------------------------------
+* logit language i.a_3 i.a_6_g i.a_1_duration_g contract parents [pw=weight]
+
+logit language i.section i.age_gr i.yearphd contract parent [pw=weight]
+est store M1
+
+* Model 2 -----------------------------------------------------------
+* logit language d_2_n i.a_3 i.a_6_g i.a_1_duration_g contract parents [pw=weight]
+
+logit language d_2_n i.section i.age_gr i.yearphd contract parent [pw=weight]
+est store M2
+
+* _______________________________________________________________________
+* Export table
+
+local vspacing "\hspace{0.4cm}"
+
+#delimit ;
+esttab M1 M2 using "${tables_tex}d_7f_logit.tex", replace 
+	b(2) se(2) noomit nobase wide booktabs fragment
+	alignment(S S)
+	nomtitles 
+	collabels("\multicolumn{1}{c}{Coef.}" "\multicolumn{1}{c}{SE}")
+	eqlabels(none)
+	refcat( 
+		2.section "Section, A (ref.)" 
+		2.age_gr "Age group, 25 or younger (ref.)"
+		2.yearphd "Year of PhD, 1st year (ref.)" 
+		, nolabel 
+	) 
+	coeflabel( 
+		2.section "`vspacing'B"
+		3.section "`vspacing'C"
+		4.section "`vspacing'D"
+		5.section "`vspacing'E"
+		2.age_gr "`vspacing'26 to 30"
+		3.age_gr "`vspacing'31 to 35"
+		4.age_gr "`vspacing'36 or older"
+		2.yearphd "`vspacing'2nd year"
+		3.yearphd "`vspacing'3rd year"
+		4.yearphd "`vspacing'4th year"
+		5.yearphd "`vspacing'5th year or more"
+		contract "Working contract only"
+		parent "Parent"
+		d_2_n "Contact person"
+		_cons "Intercept"
+	)
+;
+#delimit cr
+
+estimates clear
+
 * ==============================================================================
 * E2: Children in Household (Parenthood)
 * ==============================================================================
@@ -112,8 +312,12 @@ label values contract contractlb
 * _______________________________________________________________________
 * Logistic regression
 
+* Model 1 -----------------------------------------------------------
 logit e_2 i.section a_6_n gender i.yearphd inter contract [pw=weight]
 est store M1
+
+* _______________________________________________________________________
+* Export table
 
 local vspacing "\hspace{0.4cm}"
 
@@ -141,7 +345,10 @@ esttab M1 using "${tables_tex}e_2_logit.tex", replace
 		4.yearphd "`vspacing'4th year"
 		5.yearphd "`vspacing'5th year or more"
 		inter "International student"
-		contract "Working contract"
+		contract "Working contract only"
 		_cons "Intercept"
 	)
 ;
+#delimit cr
+
+estimates clear

@@ -663,7 +663,7 @@ esttab M1 using "${tables_tex}c_4a_n_logit.tex", replace
 		5.yearphd "`vspacing'5th year or more"
 		inter "International student"
 		parent "Parent"
-		contract "Working contract"
+		contract "Working contract only"
 		_cons "Intercept"
 	)
 ;
