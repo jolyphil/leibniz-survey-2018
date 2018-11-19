@@ -105,7 +105,7 @@ label define contractlb	///
 	1 "Working contract", modify
 label values contract contractlb
 
-* _______________________________________________________________________
+/* _______________________________________________________________________
 * Other variables
 
 * Age groups --------------------------------------------
@@ -119,7 +119,7 @@ label define age_grlb		///
 	3 "31 to 35"			///
 	4 "36 or older", modify
 label values age_gr age_grlb
-
+*/
 
 * ==============================================================================
 * D4: Desire more support (internationals)
@@ -129,19 +129,19 @@ label values age_gr age_grlb
 * Logistic regressions
 
 * Model 1 -----------------------------------------------------------
-* logit d_4_n i.a_3 i.a_6_g i.a_1_duration_g contract parents [pw=weight]
+* logit d_4_n i.a_3 a_5 i.a_1_duration_g contract parents [pw=weight]
 
 recode d_4_n (97 = 1), gen(ask_support)
 
-logit ask_support i.section i.age_gr i.yearphd contract parent [pw=weight]
+logit ask_support i.section gender i.yearphd contract parent [pw=weight]
 est store M1
 
 
 * Model 2 -----------------------------------------------------------
-* logit d_4_n d_2_n i.a_3 i.a_6_g i.a_1_duration_g contract parents [pw=weight] 
+* logit d_4_n d_2_n i.a_3 a_5 i.a_1_duration_g contract parents [pw=weight]
 * 	// including a regressor for having a contact person at the institute
 
-logit ask_support d_2_n i.section i.age_gr i.yearphd contract parent [pw=weight]
+logit ask_support d_2_n i.section gender i.yearphd contract parent [pw=weight]
 est store M2
 
 * _______________________________________________________________________
@@ -158,7 +158,6 @@ esttab M1 M2 using "${tables_tex}d_4_logit.tex", replace
 	eqlabels(none)
 	refcat( 
 		2.section "Section, A (ref.)" 
-		2.age_gr "Age group, 25 or younger (ref.)"
 		2.yearphd "Year of PhD, 1st year (ref.)" 
 		, nolabel 
 	) 
@@ -167,9 +166,7 @@ esttab M1 M2 using "${tables_tex}d_4_logit.tex", replace
 		3.section "`vspacing'C"
 		4.section "`vspacing'D"
 		5.section "`vspacing'E"
-		2.age_gr "`vspacing'26 to 30"
-		3.age_gr "`vspacing'31 to 35"
-		4.age_gr "`vspacing'36 or older"
+		gender "Woman"
 		2.yearphd "`vspacing'2nd year"
 		3.yearphd "`vspacing'3rd year"
 		4.yearphd "`vspacing'4th year"
@@ -192,15 +189,15 @@ estimates clear
 * Logistic regressions
 
 * Model 1 -----------------------------------------------------------
-* logit d_6_n i.a_3 i.a_6_g i.a_1_duration_g contract parents [pw=weight]
+* logit d_6_n i.a_3 a_5 i.a_1_duration_g contract parents [pw=weight]
 
-logit d_6_n i.section i.age_gr i.yearphd contract parent [pw=weight]
+logit d_6_n i.section gender i.yearphd contract parent [pw=weight]
 est store M1
 
 * Model 2 -----------------------------------------------------------
-* logit d_6_n d_2_n i.a_3 i.a_6_g i.a_1_duration_g contract parents [pw=weight]
+* logit d_6_n d_2_n i.a_3 a_5 i.a_1_duration_g contract parents [pw=weight]
 
-logit d_6_n d_2_n i.section i.age_gr i.yearphd contract parent [pw=weight]
+logit d_6_n d_2_n i.section gender i.yearphd contract parent [pw=weight]
 est store M2
 
 * _______________________________________________________________________
@@ -217,7 +214,6 @@ esttab M1 M2 using "${tables_tex}d_6_logit.tex", replace
 	eqlabels(none)
 	refcat( 
 		2.section "Section, A (ref.)" 
-		2.age_gr "Age group, 25 or younger (ref.)"
 		2.yearphd "Year of PhD, 1st year (ref.)" 
 		, nolabel 
 	) 
@@ -226,9 +222,7 @@ esttab M1 M2 using "${tables_tex}d_6_logit.tex", replace
 		3.section "`vspacing'C"
 		4.section "`vspacing'D"
 		5.section "`vspacing'E"
-		2.age_gr "`vspacing'26 to 30"
-		3.age_gr "`vspacing'31 to 35"
-		4.age_gr "`vspacing'36 or older"
+		gender "Woman"
 		2.yearphd "`vspacing'2nd year"
 		3.yearphd "`vspacing'3rd year"
 		4.yearphd "`vspacing'4th year"
@@ -254,15 +248,15 @@ replace language=. if d_7f_n==99
 * Logistic regressions
 
 * Model 1 -----------------------------------------------------------
-* logit language i.a_3 i.a_6_g i.a_1_duration_g contract parents [pw=weight]
+* logit language i.a_3 a_5 i.a_1_duration_g contract parents [pw=weight]
 
-logit language i.section i.age_gr i.yearphd contract parent [pw=weight]
+logit language i.section gender i.yearphd contract parent [pw=weight]
 est store M1
 
 * Model 2 -----------------------------------------------------------
-* logit language d_2_n i.a_3 i.a_6_g i.a_1_duration_g contract parents [pw=weight]
+* logit language d_2_n i.a_3 a_5 i.a_1_duration_g contract parents [pw=weight]
 
-logit language d_2_n i.section i.age_gr i.yearphd contract parent [pw=weight]
+logit language d_2_n i.section gender i.yearphd contract parent [pw=weight]
 est store M2
 
 * _______________________________________________________________________
@@ -279,7 +273,6 @@ esttab M1 M2 using "${tables_tex}d_7f_logit.tex", replace
 	eqlabels(none)
 	refcat( 
 		2.section "Section, A (ref.)" 
-		2.age_gr "Age group, 25 or younger (ref.)"
 		2.yearphd "Year of PhD, 1st year (ref.)" 
 		, nolabel 
 	) 
@@ -288,9 +281,7 @@ esttab M1 M2 using "${tables_tex}d_7f_logit.tex", replace
 		3.section "`vspacing'C"
 		4.section "`vspacing'D"
 		5.section "`vspacing'E"
-		2.age_gr "`vspacing'26 to 30"
-		3.age_gr "`vspacing'31 to 35"
-		4.age_gr "`vspacing'36 or older"
+		gender "Woman"
 		2.yearphd "`vspacing'2nd year"
 		3.yearphd "`vspacing'3rd year"
 		4.yearphd "`vspacing'4th year"
