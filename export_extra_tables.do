@@ -163,6 +163,12 @@ esttab M1 using "${tables_tex}b_1_ols.tex", replace
 		contract "Working contract only"
 		_cons "Intercept"
 	)
+	stats(
+		N, 
+		fmt(0) 
+		layout("\multicolumn{1}{c}{@}")
+		labels(`"N"')
+	)
 ;
 #delimit cr
 
@@ -216,6 +222,12 @@ esttab M1 using "${tables_tex}b_8_ols.tex", replace
 		contract "Working contract only"
 		_cons "Intercept"
 	)
+	stats(
+		N, 
+		fmt(0) 
+		layout("\multicolumn{1}{c}{@}")
+		labels(`"N"')
+	)
 ;
 #delimit cr
 
@@ -234,7 +246,7 @@ estimates clear
 
 recode d_4_n (97 = 1), gen(ask_support)
 
-logit ask_support i.section gender i.yearphd contract parent [pw=weight]
+logit ask_support i.section gender i.yearphd parent contract [pw=weight]
 est store M1
 
 
@@ -242,7 +254,7 @@ est store M1
 * logit d_4_n d_2_n i.a_3 a_5 i.a_1_duration_g contract parents [pw=weight]
 * 	// including a regressor for having a contact person at the institute
 
-logit ask_support d_2_n i.section gender i.yearphd contract parent [pw=weight]
+logit ask_support d_2_n i.section gender i.yearphd parent contract [pw=weight]
 est store M2
 
 * _______________________________________________________________________
@@ -277,6 +289,12 @@ esttab M1 M2 using "${tables_tex}d_4_logit.tex", replace
 		d_2_n "Contact person"
 		_cons "Intercept"
 	)
+	stats(
+		N, 
+		fmt(0) 
+		layout("\multicolumn{1}{c}{@}")
+		labels(`"N"')
+	)
 ;
 #delimit cr
 
@@ -292,13 +310,13 @@ estimates clear
 * Model 1 -----------------------------------------------------------
 * logit d_6_n i.a_3 a_5 i.a_1_duration_g contract parents [pw=weight]
 
-logit d_6_n i.section gender i.yearphd contract parent [pw=weight]
+logit d_6_n i.section gender i.yearphd parent contract [pw=weight]
 est store M1
 
 * Model 2 -----------------------------------------------------------
 * logit d_6_n d_2_n i.a_3 a_5 i.a_1_duration_g contract parents [pw=weight]
 
-logit d_6_n d_2_n i.section gender i.yearphd contract parent [pw=weight]
+logit d_6_n d_2_n i.section gender i.yearphd parent contract [pw=weight]
 est store M2
 
 * _______________________________________________________________________
@@ -333,6 +351,12 @@ esttab M1 M2 using "${tables_tex}d_6_logit.tex", replace
 		d_2_n "Contact person"
 		_cons "Intercept"
 	)
+	stats(
+		N, 
+		fmt(0) 
+		layout("\multicolumn{1}{c}{@}")
+		labels(`"N"')
+	)
 ;
 #delimit cr
 
@@ -351,13 +375,13 @@ replace language=. if d_7f_n==99
 * Model 1 -----------------------------------------------------------
 * logit language i.a_3 a_5 i.a_1_duration_g contract parents [pw=weight]
 
-logit language i.section gender i.yearphd contract parent [pw=weight]
+logit language i.section gender i.yearphd parent contract [pw=weight]
 est store M1
 
 * Model 2 -----------------------------------------------------------
 * logit language d_2_n i.a_3 a_5 i.a_1_duration_g contract parents [pw=weight]
 
-logit language d_2_n i.section gender i.yearphd contract parent [pw=weight]
+logit language d_2_n i.section gender i.yearphd parent contract [pw=weight]
 est store M2
 
 * _______________________________________________________________________
@@ -391,6 +415,12 @@ esttab M1 M2 using "${tables_tex}d_7f_logit.tex", replace
 		parent "Parent"
 		d_2_n "Contact person"
 		_cons "Intercept"
+	)
+	stats(
+		N, 
+		fmt(0) 
+		layout("\multicolumn{1}{c}{@}")
+		labels(`"N"')
 	)
 ;
 #delimit cr
@@ -439,6 +469,12 @@ esttab M1 using "${tables_tex}e_2_logit.tex", replace
 		inter "International student"
 		contract "Working contract only"
 		_cons "Intercept"
+	)
+	stats(
+		N, 
+		fmt(0) 
+		layout("\multicolumn{1}{c}{@}")
+		labels(`"N"')
 	)
 ;
 #delimit cr

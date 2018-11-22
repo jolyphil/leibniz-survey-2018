@@ -666,6 +666,12 @@ esttab M1 using "${tables_tex}c_4a_n_logit.tex", replace
 		contract "Working contract only"
 		_cons "Intercept"
 	)
+	stats(
+		N, 
+		fmt(0) 
+		layout("\multicolumn{1}{c}{@}")
+		labels(`"N"')
+	)
 ;
 
 * ==============================================================================
