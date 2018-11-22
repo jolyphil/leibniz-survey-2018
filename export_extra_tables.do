@@ -122,6 +122,107 @@ label values age_gr age_grlb
 */
 
 * ==============================================================================
+* B1: Satisfaction in general
+* ==============================================================================
+
+* _______________________________________________________________________
+* OLS regression
+
+reg b_1 i.section gender i.yearphd inter parent contract [pw=weight]
+est store M1
+
+* _______________________________________________________________________
+* Export table
+
+local vspacing "\hspace{0.4cm}"
+
+#delimit ;
+esttab M1 using "${tables_tex}b_1_ols.tex", replace 
+	b(2) se(2) noomit nobase wide booktabs fragment
+	alignment(S S)
+	nomtitles nonum
+	collabels("\multicolumn{1}{c}{Coef.}" "\multicolumn{1}{c}{SE}")
+	eqlabels(none)
+	refcat( 
+		2.section "Section, A (ref.)" 
+		2.yearphd "Year of PhD, 1st year (ref.)" 
+		, nolabel 
+	) 
+	coeflabel( 
+		2.section "`vspacing'B"
+		3.section "`vspacing'C"
+		4.section "`vspacing'D"
+		5.section "`vspacing'E"
+		gender "Woman"
+		2.yearphd "`vspacing'2nd year"
+		3.yearphd "`vspacing'3rd year"
+		4.yearphd "`vspacing'4th year"
+		5.yearphd "`vspacing'5th year or more"
+		inter "International student"
+		parent "Parent"
+		contract "Working contract only"
+		_cons "Intercept"
+	)
+;
+#delimit cr
+
+estimates clear
+
+* ==============================================================================
+* B8: Satisfaction with supervision
+* ==============================================================================
+
+* _______________________________________________________________________
+* Recode variable
+
+recode b_11 (99 = .), gen(phdagree)
+
+* _______________________________________________________________________
+* OLS regression
+
+reg b_8 phdagree i.section gender i.yearphd inter parent contract [pw=weight]
+est store M1
+
+* _______________________________________________________________________
+* Export table
+
+local vspacing "\hspace{0.4cm}"
+
+#delimit ;
+esttab M1 using "${tables_tex}b_8_ols.tex", replace 
+	b(2) se(2) noomit nobase wide booktabs fragment
+	alignment(S S)
+	nomtitles nonum
+	collabels("\multicolumn{1}{c}{Coef.}" "\multicolumn{1}{c}{SE}")
+	eqlabels(none)
+	refcat( 
+		2.section "Section, A (ref.)" 
+		2.yearphd "Year of PhD, 1st year (ref.)" 
+		, nolabel 
+	) 
+	coeflabel( 
+		phdagree "PhD agreement"
+		2.section "`vspacing'B"
+		3.section "`vspacing'C"
+		4.section "`vspacing'D"
+		5.section "`vspacing'E"
+		gender "Woman"
+		2.yearphd "`vspacing'2nd year"
+		3.yearphd "`vspacing'3rd year"
+		4.yearphd "`vspacing'4th year"
+		5.yearphd "`vspacing'5th year or more"
+		inter "International student"
+		parent "Parent"
+		contract "Working contract only"
+		_cons "Intercept"
+	)
+;
+#delimit cr
+
+estimates clear
+
+
+* ==============================================================================
 * D4: Desire more support (internationals)
 * ==============================================================================
 
