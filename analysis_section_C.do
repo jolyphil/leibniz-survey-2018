@@ -132,13 +132,20 @@ graph pie [aw=weight], over(c_1a_rec) ///
 	pie(6, color(gs10))
 graph export "${figures_pdf}c_1a_n_pie.pdf", replace
 
-* Export graph data
-estpost tabulate c_1a_rec [aw=weight], nototal
+* Export graph data: pct
+quietly: estpost tabulate c_1a_rec [aw=weight], nototal
 esttab using "${figures_data}c_1a_n_pie.csv", ///
-	cells("pct(fmt(2))") csv noobs plain collabels(none) ///
+	cells("pct(fmt(1))") csv noobs plain collabels(none) ///
 	varlabels(`e(labels)') unstack nomtitles ///
 	replace
-
+	
+* Export graph data: Ns
+quietly: estpost tabulate c_1a_rec [aw=weight]
+esttab using "${figures_data}N_c_1a_n_pie.csv", ///
+	cells("b(fmt(0))") csv noobs plain collabels(none) ///
+	varlabels(`e(labels)') unstack nomtitles ///
+	replace
+	
 * By section, year of PhD, internationals, contract  ----------------
 	
 foreach var of varlist section yearphd inter contract {
@@ -152,15 +159,21 @@ foreach var of varlist section yearphd inter contract {
 		xsize(8)
 	graph export "${figures_pdf}c_1a_n_`var'_bar.pdf", replace
 
-	* Export graph data
-	estpost tabulate c_1a_rec `var' [aw=weight], nototal
+	* Export graph data: pct
+	quietly: estpost tabulate c_1a_rec `var' [aw=weight], nototal
 	esttab using "${figures_data}c_1a_n_`var'_bar.csv", ///
-		cell(colpct(fmt(2))) unstack noobs  varlabels(`e(labels)') ///
+		cell(colpct(fmt(1))) unstack noobs  varlabels(`e(labels)') ///
 		collabels(none) nomtitles plain ///
-	replace 
-}
-*	
+	replace
+	
+	* Export graph data: N
+	quietly: estpost tabulate c_1a_rec `var' [aw=weight]
+	esttab using "${figures_data}N_c_1a_n_`var'_bar.csv", ///
+		cell(b(fmt(0))) unstack noobs  varlabels(`e(labels)') ///
+		collabels(none) nomtitles plain ///
+	replace
 
+}
 * _______________________________________________________________________
 * Graphs: C.1.B. Support for conferences without participation
 
@@ -177,10 +190,17 @@ graph pie [aw=weight], over(c_1b_rec) ///
 	pie(6, color(gs10))
 graph export "${figures_pdf}c_1b_n_pie.pdf", replace
 
-* Export graph data
-estpost tabulate c_1b_rec [aw=weight], nototal
+* Export graph data: pct
+quietly: estpost tabulate c_1b_rec [aw=weight], nototal
 esttab using "${figures_data}c_1b_n_pie.csv", ///
-	cells("pct(fmt(2))") csv noobs plain collabels(none) ///
+	cells("pct(fmt(1))") csv noobs plain collabels(none) ///
+	varlabels(`e(labels)') unstack nomtitles ///
+	replace
+	
+* Export graph data: Ns
+quietly: estpost tabulate c_1b_rec [aw=weight], nototal
+esttab using "${figures_data}N_c_1b_n_pie.csv", ///
+	cells("b(fmt(0))") csv noobs plain collabels(none) ///
 	varlabels(`e(labels)') unstack nomtitles ///
 	replace
 
@@ -197,10 +217,17 @@ foreach var of varlist section contract {
 		xsize(8)
 	graph export "${figures_pdf}c_1b_n_`var'_bar.pdf", replace
 
-	* Export graph data
-	estpost tabulate c_1b_rec `var' [aw=weight], nototal
+	* Export graph data: pct
+	quietly: estpost tabulate c_1b_rec `var' [aw=weight], nototal
 	esttab using "${figures_data}c_1b_n_`var'_bar.csv", ///
-		cell(colpct(fmt(2))) unstack noobs  varlabels(`e(labels)') ///
+		cell(colpct(fmt(1))) unstack noobs  varlabels(`e(labels)') ///
+		collabels(none) nomtitles plain ///
+	replace 
+	
+	* Export graph data: Ns
+	quietly: estpost tabulate c_1b_rec `var' [aw=weight]
+	esttab using "${figures_data}N_c_1b_n_`var'_bar.csv", ///
+		cell(b(fmt(0))) unstack noobs  varlabels(`e(labels)') ///
 		collabels(none) nomtitles plain ///
 	replace 
 }
@@ -221,10 +248,17 @@ graph pie [aw=weight], over(c_1c_rec) ///
 	pie(6, color(gs10))
 graph export "${figures_pdf}c_1c_n_pie.pdf", replace
 
-* Export graph data
-estpost tabulate c_1c_rec [aw=weight], nototal
+* Export graph data: pct
+quietly: estpost tabulate c_1c_rec [aw=weight], nototal
 esttab using "${figures_data}c_1c_n_pie.csv", ///
-	cells("pct(fmt(2))") csv noobs plain collabels(none) ///
+	cells("pct(fmt(1))") csv noobs plain collabels(none) ///
+	varlabels(`e(labels)') unstack nomtitles ///
+	replace
+	
+* Export graph data: Ns
+quietly: estpost tabulate c_1c_rec [aw=weight],
+esttab using "${figures_data}N_c_1c_n_pie.csv", ///
+	cells("b(fmt(0))") csv noobs plain collabels(none) ///
 	varlabels(`e(labels)') unstack nomtitles ///
 	replace
 
@@ -241,12 +275,19 @@ foreach var of varlist section contract {
 		xsize(8)
 	graph export "${figures_pdf}c_1c_n_`var'_bar.pdf", replace
 
-	* Export graph data
-	estpost tabulate c_1c_rec `var' [aw=weight], nototal
+	* Export graph data: pct
+	quietly: estpost tabulate c_1c_rec `var' [aw=weight], nototal
 	esttab using "${figures_data}c_1c_n_`var'_bar.csv", ///
-		cell(colpct(fmt(2))) unstack noobs  varlabels(`e(labels)') ///
+		cell(colpct(fmt(1))) unstack noobs  varlabels(`e(labels)') ///
 		collabels(none) nomtitles plain ///
-	replace 
+	replace
+	
+	* Export graph data: Ns
+	quietly: estpost tabulate c_1c_rec `var' [aw=weight]
+	esttab using "${figures_data}N_c_1c_n_`var'_bar.csv", ///
+		cell(b(fmt(0))) unstack noobs  varlabels(`e(labels)') ///
+		collabels(none) nomtitles plain ///
+	replace
 }
 * _______________________________________________________________________
 * Graphs: C.1.D. Support for specific training
@@ -264,10 +305,17 @@ graph pie [aw=weight], over(c_1d_rec) ///
 	pie(6, color(gs10))
 graph export "${figures_pdf}c_1d_n_pie.pdf", replace
 
-* Export graph data
-estpost tabulate c_1d_rec [aw=weight], nototal
+* Export graph data: pct
+quietly: estpost tabulate c_1d_rec [aw=weight], nototal
 esttab using "${figures_data}c_1d_n_pie.csv", ///
-	cells("pct(fmt(2))") csv noobs plain collabels(none) ///
+	cells("pct(fmt(1))") csv noobs plain collabels(none) ///
+	varlabels(`e(labels)') unstack nomtitles ///
+	replace
+	
+* Export graph data: Ns
+quietly: estpost tabulate c_1d_rec [aw=weight],
+esttab using "${figures_data}N_c_1d_n_pie.csv", ///
+	cells("b(fmt(0))") csv noobs plain collabels(none) ///
 	varlabels(`e(labels)') unstack nomtitles ///
 	replace
 
@@ -284,10 +332,17 @@ foreach var of varlist section contract {
 		xsize(8)
 	graph export "${figures_pdf}c_1d_n_`var'_bar.pdf", replace
 
-	* Export graph data
-	estpost tabulate c_1d_rec `var' [aw=weight], nototal
+	* Export graph data: pct
+	quietly: estpost tabulate c_1d_rec `var' [aw=weight], nototal
 	esttab using "${figures_data}c_1d_n_`var'_bar.csv", ///
-		cell(colpct(fmt(2))) unstack noobs  varlabels(`e(labels)') ///
+		cell(colpct(fmt(1))) unstack noobs  varlabels(`e(labels)') ///
+		collabels(none) nomtitles plain ///
+	replace 
+	
+	* Export graph data: Ns
+	quietly: estpost tabulate c_1d_rec `var' [aw=weight],
+	esttab using "${figures_data}N_c_1d_n_`var'_bar.csv", ///
+		cell(b(fmt(0))) unstack noobs  varlabels(`e(labels)') ///
 		collabels(none) nomtitles plain ///
 	replace 
 }
@@ -332,10 +387,17 @@ graph pie [aw=weight], over(c_2_rec) ///
 	pie(3, color(gs10))
 graph export "${figures_pdf}c_2_pie.pdf", replace
 
-* Export graph data
-estpost tabulate c_2_rec [aw=weight], nototal
+* Export graph data: pct
+quietly: estpost tabulate c_2_rec [aw=weight], nototal
 esttab using "${figures_data}c_2_pie.csv", ///
-	cells("pct(fmt(2))") csv noobs plain collabels(none) ///
+	cells("pct(fmt(1))") csv noobs plain collabels(none) ///
+	unstack nomtitles ///
+	replace
+
+* Export graph data: Ns
+quietly: estpost tabulate c_2_rec [aw=weight], 
+esttab using "${figures_data}N_c_2_pie.csv", ///
+	cells("b(fmt(0))") csv noobs plain collabels(none) ///
 	unstack nomtitles ///
 	replace
 
@@ -353,10 +415,17 @@ foreach var of varlist yearphd {
 		xsize(8)
 	graph export "${figures_pdf}c_2_`var'_bar.pdf", replace
 
-	* Export graph data
-	estpost tabulate c_2_rec `var' [aw=weight], nototal
+	* Export graph data: pct
+	quietly: estpost tabulate c_2_rec `var' [aw=weight], nototal
 	esttab using "${figures_data}c_2_`var'_bar.csv", ///
-		cell(colpct(fmt(2))) unstack noobs  varlabels(`e(labels)') ///
+		cell(colpct(fmt(1))) unstack noobs  varlabels(`e(labels)') ///
+		collabels(none) nomtitles plain ///
+	replace 
+	
+	* Export graph data: Ns
+	quietly: estpost tabulate c_2_rec `var' [aw=weight], 
+	esttab using "${figures_data}N_c_2_`var'_bar.csv", ///
+		cell(b(fmt(0))) unstack noobs  varlabels(`e(labels)') ///
 		collabels(none) nomtitles plain ///
 	replace 
 }
@@ -469,11 +538,11 @@ graph hbar (mean) `ordered_var_pct' [aw=weight], ///
 	legend(off)
 graph export "${figures_pdf}c_3_bar.pdf", replace
 
-* Export graph data
-estpost tabstat `ordered_var_pct' [aw=weight], ///
+* Export graph data: pct
+quietly: estpost tabstat `ordered_var_pct' [aw=weight], ///
 	statistics(mean) columns(statistics)
 esttab using "${figures_data}c_3_bar.csv", ///
-	cells("mean(fmt(2))") ///
+	cells("mean(fmt(1))") ///
 	coeflabel( ///
 		c_3a_n_rec "Bulid a network" ///
 		c_3c_n_rec "Seek advice" ///
@@ -485,6 +554,22 @@ esttab using "${figures_data}c_3_bar.csv", ///
 	csv noobs plain collabels(none) unstack nomtitles ///
 	replace
 
+* Export graph data: Ns
+quietly: estpost tabstat `ordered_var_pct' [aw=weight], ///
+	statistics(mean) columns(statistics)
+esttab using "${figures_data}N_c_3_bar.csv", ///
+	cells("mean(fmt(1))") ///
+	coeflabel( ///
+		c_3a_n_rec "Bulid a network" ///
+		c_3c_n_rec "Seek advice" ///
+		c_3b_n_rec "Specific training" ///
+		c_3d_n_rec "Constant job search" ///
+		c_3e_n_rec "Apply to job already" ///
+		c_3f_n_rec "None" ///
+		) ///
+	csv plain collabels(none) unstack nomtitles ///
+	replace
+	
 * _______________________________________________________________________
 * Tables
 
@@ -592,10 +677,10 @@ graph hbar (mean) `ordered_var_pct' [aw=weight], ///
 	
 graph export "${figures_pdf}c_4_bar.pdf", replace
 
-* Export graph data
+* Export graph data: pct
 estpost tabstat `ordered_var_pct' [aw=weight], statistics(mean) columns(statistics)
 esttab using "${figures_data}c_4_bar.csv", ///
-	cells("mean(fmt(2))") ///
+	cells("mean(fmt(1))") ///
 	coeflabel( ///
 		c_4a_n_rec "Academia" ///
 		c_4e_n_rec "Private scientific jobs" ///
@@ -605,6 +690,21 @@ esttab using "${figures_data}c_4_bar.csv", ///
 		c_4f_n_rec "Don't know" ///
 		) ///
 	csv noobs plain collabels(none) unstack nomtitles ///
+	replace
+	
+* Export graph data: N
+estpost tabstat `ordered_var_pct' [aw=weight], statistics(mean) columns(statistics)
+esttab using "${figures_data}N_c_4_bar.csv", ///
+	cells("mean(fmt(2))") ///
+	coeflabel( ///
+		c_4a_n_rec "Academia" ///
+		c_4e_n_rec "Private scientific jobs" ///
+		c_4b_n_rec "Science-related public work" ///
+		c_4d_n_rec "Private non-scientific job" ///
+		c_4c_n_rec "Publically-funded non-scientific job" ///
+		c_4f_n_rec "Don't know" ///
+		) ///
+	csv plain collabels(none) unstack nomtitles ///
 	replace
 
 * _______________________________________________________________________
@@ -673,7 +773,7 @@ esttab M1 using "${tables_tex}c_4a_n_logit.tex", replace
 		labels(`"N"')
 	)
 ;
-
+#delimit cr
 * ==============================================================================
 * C4.1: Reasons for not pursuing a career in academia
 * ==============================================================================
@@ -811,11 +911,11 @@ graph hbar (mean) `ordered_var_pct' [aw=weight], ///
 	legend(off)
 graph export "${figures_pdf}c_4-1_bar.pdf", replace
 
-* Export graph data
-estpost tabstat `ordered_var_pct' [aw=weight], ///
+* Export graph data: pct
+quietly: estpost tabstat `ordered_var_pct' [aw=weight], ///
 	statistics(mean) columns(statistics)
 esttab using "${figures_data}c_4-1_bar.csv", ///
-	cells("mean(fmt(2))") ///
+	cells("mean(fmt(1))") ///
 	coeflabel( ///
 		c_4_1e_n_rec "Limited working contracts" ///
 		c_4_1j_n_rec "Changes of residence" ///
@@ -831,6 +931,28 @@ esttab using "${figures_data}c_4-1_bar.csv", ///
 		c_4_1f_n_rec "Supervisor advised to leave academia" /// 
 		) ///
 	csv noobs plain collabels(none) unstack nomtitles ///
+	replace
+	
+* Export graph data: Ns
+quietly: estpost tabstat `ordered_var_pct' [aw=weight], ///
+	statistics(mean) columns(statistics)
+esttab using "${figures_data}N_c_4-1_bar.csv", ///
+	cells("mean(fmt(2))") ///
+	coeflabel( ///
+		c_4_1e_n_rec "Limited working contracts" ///
+		c_4_1j_n_rec "Changes of residence" ///
+		c_4_1i_n_rec "Other sectors paid better" ///
+		c_4_1b_n_rec "Too competitive" ///
+		c_4_1k_n_rec "Familiy responsibilities" ///
+		c_4_1d_n_rec "Low chance to get post doc position" ///
+		c_4_1h_n_rec "Looking for a new challenge" ///
+		c_4_1m_n_rec "Do not feel qualified enough" ///
+		c_4_1a_n_rec "No interest" ///
+		c_4_1c_n_rec "Hard to organize my own work" /// 
+		c_4_1g_n_rec "Don't have the required grades" /// 
+		c_4_1f_n_rec "Supervisor advised to leave academia" /// 
+		) ///
+	csv plain collabels(none) unstack nomtitles ///
 	replace
 
 * _______________________________________________________________________
@@ -923,11 +1045,11 @@ graph hbar (mean) `ordered_var_pct' [aw=weight], ///
 	legend(off)
 graph export "${figures_pdf}c_5_bar.pdf", replace
 
-* Export graph data
-estpost tabstat `ordered_var_pct' [aw=weight], ///
+* Export graph data: pct
+quietly: estpost tabstat `ordered_var_pct' [aw=weight], ///
 	statistics(mean) columns(statistics)
 esttab using "${figures_data}c_5_bar.csv", ///
-	cells("mean(fmt(2))") ///
+	cells("mean(fmt(1))") ///
 	coeflabel( ///
 		c_5a_n_rec "Scientific writing" ///
 		c_5f_n_rec "Scientific methods" ///
@@ -940,6 +1062,25 @@ esttab using "${figures_data}c_5_bar.csv", ///
 		c_5d_n_rec "Other language" ///
 		) ///
 	csv noobs plain collabels(none) unstack nomtitles ///
+	replace
+	
+* Export graph data: pct
+quietly: estpost tabstat `ordered_var_pct' [aw=weight], ///
+	statistics(mean) columns(statistics)
+esttab using "${figures_data}N_c_5_bar.csv", ///
+	cells("mean(fmt(4))") ///
+	coeflabel( ///
+		c_5a_n_rec "Scientific writing" ///
+		c_5f_n_rec "Scientific methods" ///
+		c_5g_n_rec "Graduate school" ///
+		c_5c_n_rec "German" ///
+		c_5i_n_rec "Other soft skills" ///
+		c_5b_n_rec "English" ///
+		c_5e_n_rec "Career development" ///
+		c_5h_n_rec "Grant application" ///
+		c_5d_n_rec "Other language" ///
+		) ///
+	csv plain collabels(none) unstack nomtitles ///
 	replace
 
 * ==============================================================================
@@ -1068,11 +1209,11 @@ graph hbar (mean) `ordered_var_pct' [aw=weight], ///
 	legend(off)
 graph export "${figures_pdf}c_5-2_bar.pdf", replace
 
-* Export graph data
-estpost tabstat `ordered_var_pct' [aw=weight], ///
+* Export graph data: pct
+quietly: estpost tabstat `ordered_var_pct' [aw=weight], ///
 	statistics(mean) columns(statistics)
 esttab using "${figures_data}c_5-2_bar.csv", ///
-	cells("mean(fmt(2))") ///
+	cells("mean(fmt(1))") ///
 	coeflabel( ///
 		c_5_2e_n_rec "Scientific methods" ///
 		c_5_2g_n_rec "Grant application" ///
@@ -1084,6 +1225,24 @@ esttab using "${figures_data}c_5-2_bar.csv", ///
 		c_5_2d_n_rec "Other language" ///
 		) ///
 	csv noobs plain collabels(none) unstack nomtitles ///
+	replace
+	
+* Export graph data: Ns
+quietly: estpost tabstat `ordered_var_pct' [aw=weight], ///
+	statistics(mean) columns(statistics)
+esttab using "${figures_data}N_c_5-2_bar.csv", ///
+	cells("mean(fmt(4))") ///
+	coeflabel( ///
+		c_5_2e_n_rec "Scientific methods" ///
+		c_5_2g_n_rec "Grant application" ///
+		c_5_2a_n_rec "Scientific writing" ///
+		c_5_2h_n_rec "Other soft skills" ///
+		c_5_2b_n_rec "English" ///
+		c_5_2c_n_rec "German" ///
+		c_5_2f_n_rec "Graduate school" ///
+		c_5_2d_n_rec "Other language" ///
+		) ///
+	csv plain collabels(none) unstack nomtitles ///
 	replace
 
 * _______________________________________________________________________
@@ -1161,10 +1320,17 @@ graph pie [aw=weight], over(c_6_n_rec) ///
 	pie(3, color(gs10))
 graph export "${figures_pdf}c_6_pie.pdf", replace
 
-* Export graph data
-estpost tabulate c_6_n_rec [aw=weight], nototal
+* Export graph data: pct
+quietly: estpost tabulate c_6_n_rec [aw=weight], nototal
 esttab using "${figures_data}c_6_pie.csv", ///
-	cells("pct(fmt(2))") csv noobs plain collabels(none) ///
+	cells("pct(fmt(1))") csv noobs plain collabels(none) ///
+	unstack nomtitles ///
+	replace
+	
+* Export graph data: Ns
+quietly: estpost tabulate c_6_n_rec [aw=weight], nototal
+esttab using "${figures_data}N_c_6_pie.csv", ///
+	cells("b(fmt(0))") csv noobs plain collabels(none) ///
 	unstack nomtitles ///
 	replace
 
@@ -1181,10 +1347,17 @@ foreach var of varlist section {
 		xsize(8)
 	graph export "${figures_pdf}c_6_`var'_bar.pdf", replace
 
-	* Export graph data
-	estpost tabulate c_6_n_rec `var'[aw=weight], nototal
+	* Export graph data: pct
+	quietly: estpost tabulate c_6_n_rec `var'[aw=weight], nototal
 	esttab using "${figures_data}c_6_`var'_bar.csv", ///
-		cell(colpct(fmt(2))) unstack noobs  varlabels(`e(labels)') ///
+		cell(colpct(fmt(1))) unstack noobs  varlabels(`e(labels)') ///
+		collabels(none) nomtitles plain ///
+	replace 
+	
+	* Export graph data: Ns
+	quietly: estpost tabulate c_6_n_rec `var'[aw=weight],
+	esttab using "${figures_data}N_c_6_`var'_bar.csv", ///
+		cell(b(fmt(0))) unstack noobs  varlabels(`e(labels)') ///
 		collabels(none) nomtitles plain ///
 	replace 
 }
